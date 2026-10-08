@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="托福30天">
+<meta name="theme-color" content="#0c1827">
+<title>托福30天 · 学习控制台</title>
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#0c1827;--panel:#12263a;--panel2:#17334a;--text:#f5f0e6;--muted:#9db2c2;--mint:#8fd5c3;--amber:#f3b562;--coral:#e67f68;--blue:#75a9ff;--line:#28445a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;font-size:16px;line-height:1.5}
+body{padding:env(safe-area-inset-top) 0 calc(72px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:5;background:rgba(12,24,39,.96);backdrop-filter:blur(8px);padding:10px 16px 8px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+header h1{font-size:18px;margin:0;color:var(--amber);flex:1}
+#sync{font-size:12px;color:var(--muted);text-align:right;white-space:nowrap}
+#sync.ok{color:var(--mint)}#sync.err{color:var(--coral)}
+main{max-width:760px;margin:0 auto;padding:14px 14px 24px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:17px;margin:0 0 8px}
+.eyebrow{color:var(--amber);font-size:13px;font-weight:600}
+.title{font-size:22px;font-weight:700;margin:2px 0}
+.muted{color:var(--muted);font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px}
+.stat b{display:block;font-size:20px}.stat span{font-size:12px;color:var(--muted)}
+.daynav{display:flex;gap:8px;margin-top:10px}
+button,.btn{font:inherit;border:0;border-radius:10px;padding:10px 14px;background:var(--panel2);color:var(--mint);font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+button.primary,.btn.primary{background:var(--mint);color:#10232c}
+button.amber{background:var(--amber);color:#241b11}
+button.ghost{background:transparent;color:var(--muted);padding:6px 8px}
+button:disabled{opacity:.5}
+.task{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-top:1px solid var(--line)}
+.task:first-of-type{border-top:0}
+.task input{width:26px;height:26px;margin:2px 0 0;accent-color:var(--mint);flex:none}
+.task label{flex:1}.task small{display:block;color:var(--muted);font-size:12px}
+.task.done label{color:var(--muted);text-decoration:line-through}
+.steps{white-space:pre-wrap;font-size:14px;margin:0}
+.mat{font-size:14px;padding:6px 0;border-top:1px dashed var(--line)}
+.mat:first-child{border-top:0}.mat code{display:block;color:var(--muted);font-size:12px;word-break:break-all;font-family:inherit}
+textarea,input[type=text],input[type=date],input[type=number],select{width:100%;font:inherit;font-size:16px;color:var(--text);background:#0e2030;border:1px solid var(--line);border-radius:10px;padding:10px}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+.field{margin:8px 0}.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.grid30{display:grid;grid-template-columns:1fr;gap:8px}
+.dayitem{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.dayitem.today{border-color:var(--amber)}
+.dayitem .n{font-weight:700;width:42px;color:var(--amber)}
+.dayitem .t{flex:1;font-size:14px}.dayitem .t small{display:block;color:var(--muted);font-size:12px}
+.pill{font-size:12px;border-radius:999px;padding:2px 8px;background:var(--panel2);color:var(--mint);white-space:nowrap}
+.pill.full{background:var(--mint);color:#10232c}.pill.live{background:#3a2a14;color:var(--amber)}
+.bar{height:8px;background:#0a1420;border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--mint)}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;background:#0a1420;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;background:transparent;border-radius:0;color:var(--muted);padding:10px 0 12px;font-size:13px;font-weight:600}
+nav button.on{color:var(--mint)}
+nav button .ic{display:block;font-size:19px;line-height:1.2}
+.log{border-top:1px solid var(--line);padding:8px 0;font-size:14px}.log:first-child{border-top:0}
+.log b{color:var(--mint)}
+.timer{font-size:28px;font-weight:700;color:var(--amber);min-width:96px}
+.hidden{display:none}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--mint);color:#10232c;padding:8px 14px;border-radius:99px;font-size:14px;font-weight:600;z-index:9;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+a{color:var(--mint)}
+</style>
+</head>
+<body>
+<header><h1>托福 30 天</h1><div id="sync">…</div></header>
+<main id="view"></main>
+<nav id="nav">
+  <button data-v="today"><span class="ic">✅</span>今天</button>
+  <button data-v="plan"><span class="ic">🗓️</span>30天</button>
+  <button data-v="speak"><span class="ic">🎙️</span>口语</button>
+  <button data-v="score"><span class="ic">📈</span>成绩</button>
+  <button data-v="set"><span class="ic">⚙️</span>设置</button>
+</nav>
+<div class="toast" id="toast"></div>
+<script>
+"use strict";
+const DAYS = [{"n": 1, "folder": "Day01_10-08_基线模考", "src": "2026-01-21_A卷（官方式整套：题目PDF + 听力Module1/2 + 口语音频 + 答案 + 原文）", "tasks": ["【主任务·计时模考 约 2 小时，中途不暂停、不查答案】套题：02_主线\\2026-01-21_A卷", "  顺序：阅读 → 听力 → 写作 → 口语。口语：播放口语音频，每题听完立刻用手机录音。", "  做完再对「答案」，听力错题对照「听力原文」回听 2 遍。", "【复盘 20 分钟】记录四科正确率、每部分用时、最卡的 3 个点，写进 App「今日复盘」。", "【口语档案 10 分钟】录一段 2 分钟英文自我介绍（Day01_自我介绍.m4a，存进本文件夹）。", "【写作基线 15 分钟】若套题写作已做完则跳过；否则写 1 篇 10 分钟 Academic Discussion 存为原始版本。"], "out": "四科正确率表 + 每部分用时 + 口语录音 + 自我介绍录音", "live": false, "links": [["1_题目(阅读写作口语)", "02_主线_2026新托福真题\\2026-01-21_A卷\\新托福真题01.pdf"], ["2_听力Module1", "02_主线_2026新托福真题\\2026-01-21_A卷\\听力合集\\1.21新托福真题Listening-Module1.mp3"], ["3_听力Module2", "02_主线_2026新托福真题\\2026-01-21_A卷\\听力合集\\1.21新托福真题Listening-Module2.mp3"], ["4_口语音频", "02_主线_2026新托福真题\\2026-01-21_A卷\\新托福真题01Speaking.mp3"], ["5_参考答案(做完再看)", "02_主线_2026新托福真题\\2026-01-21_A卷\\新托福真题01参考答案.pdf"], ["6_听力原文(做完再看)", "02_主线_2026新托福真题\\2026-01-21_A卷\\新托福真题01-听力原文.pdf"], ["整套文件夹_2026-01-21_A卷", "02_主线_2026新托福真题\\2026-01-21_A卷"]]}, {"n": 2, "folder": "Day02_10-09_完形填词+日常阅读", "src": "官方OG第7版 + 201词汇全科（阅读填空500词）", "tasks": ["【主任务 25′】OG 第7版 PDF 的 Reading 部分：Complete the Words、Read in Daily Life 例题，先限时再对答案。", "【词汇 30′】从《2026改革后阅读填空题常考500词》整理 20 个高频词根/搭配做成卡片，然后复测 OG 同类题 1 组。", "【其余固定节奏】阅读 25′ / 听力精听 30′ / 口语录音 25′（先 Listen & Repeat 再 Interview）/ 写作 30′ / 错题日志 10′ —— 下面写了每块今天用什么。", "  听力 30′：OG 第7版音频文件夹里按书中 Listening 章节编号的音频，盲听→看原文→复述。", "  口语 25′：OG 里 Listen & Repeat / Interview 示例跟读录音。", "  写作 30′：OG 里 Write an Email 示例限时 7 分钟写 1 篇。", "  错题日志 10′：只写 错误原因—改法—明天如何复测。"], "out": "20 个词根/搭配卡片 + 复测正确率", "live": false, "links": [["1_OG官方指南第7版PDF", "03_官方OG\\OG官方指南第7版(PDF+音频)\\托福OG官方指南(第7版).pdf"], ["2_OG第7版音频", "03_官方OG\\OG官方指南第7版(PDF+音频)\\官方指南音频（第7版）\\音频"], ["3_阅读填空常考500词", "05_方法讲解_查阅用\\【201】新版本自学礼包\\【04】2026 新托福词汇全科\\2026改革后阅读填空题常考500词(分学科+音标+记忆法+例句).pdf"]]}, {"n": 3, "folder": "Day03_10-10_听力选择题+公告", "src": "2026-03-29_国内线下（听力 docx + m4a，较完整）", "tasks": ["【主任务 40′】播放「3.29 听力.m4a」，题目在「3.29 听力.docx」。Listen and Choose a Response + Announcement：每段写 5 个关键词 + 1 句主旨，做完对「3.29 答案.pdf」，错题回听 3 遍。", "【其余固定节奏】阅读 25′ / 听力精听 30′ / 口语录音 25′（先 Listen & Repeat 再 Interview）/ 写作 30′ / 错题日志 10′ —— 下面写了每块今天用什么。", "  阅读 25′：「3.29 阅读-1 自带答案.pdf」限时完成再对答案。", "  口语 25′：「口语-后续还会补充范例等」里 q1–q3 wav 做 Listen & Repeat 跟读录音。", "  写作 30′：「3.29 写作.pdf」选邮件题限时 7 分钟。", "  错题日志 10′。"], "out": "每段 5 关键词 + 1 句主旨 + 错题", "live": false, "links": [["1_听力音频", "02_主线_2026新托福真题\\2026-03-29_国内线下(较完整)\\听力\\3.29 听力.m4a"], ["2_听力题目", "02_主线_2026新托福真题\\2026-03-29_国内线下(较完整)\\听力\\3.29 听力.docx"], ["3_答案", "02_主线_2026新托福真题\\2026-03-29_国内线下(较完整)\\3.29 答案.pdf"], ["4_阅读1(带答案)", "02_主线_2026新托福真题\\2026-03-29_国内线下(较完整)\\3.29 阅读-1 自带答案.pdf"], ["5_写作", "02_主线_2026新托福真题\\2026-03-29_国内线下(较完整)\\3.29 写作.pdf"], ["6_口语文件夹", "02_主线_2026新托福真题\\2026-03-29_国内线下(较完整)\\口语-后续还会补充范例等"], ["整套文件夹_2026-03-29", "02_主线_2026新托福真题\\2026-03-29_国内线下(较完整)"]]}, {"n": 4, "folder": "Day04_10-11_听后跟读基础", "src": "2026-03-30 口语（仅Q1–5 = Listen & Repeat 部分）+ 2026-03-27 口语part1", "tasks": ["【主任务 40′】先解压「3.30 口语仅q1-5.mp4.zip」。取 4 题，每题三遍录音：①盲听直接复述 ②看文本后复述 ③对照原音找差异（重音、连读、漏词）。", "  再用「3.27 口语part1.m4a」同样方法练 3 题。", "【其余固定节奏】阅读 25′ / 听力精听 30′ / 口语录音 25′（先 Listen & Repeat 再 Interview）/ 写作 30′ / 错题日志 10′ —— 下面写了每块今天用什么。", "  阅读 25′：「3.30阅读.pdf」限时。  听力 30′：「3.30 听力.m4a.zip」解压后精听一段，对照「3.30听力.pdf」。", "  写作 30′：「3.30写作.pdf」组句 10 题。  错题日志 10′。"], "out": "每题 3 遍录音（存进本文件夹）", "live": false, "links": [["1_口语Q1-5(先解压)", "02_主线_2026新托福真题\\2026-03-30(口语仅Q1-5_音频需解压)\\3.30 口语仅q1-5.mp4.zip"], ["2_3.27口语part1", "02_主线_2026新托福真题\\2026-03-27\\3.27 口语part1.m4a"], ["3_3.27口语题目", "02_主线_2026新托福真题\\2026-03-27\\3.27口语.pdf"], ["4_3.30阅读", "02_主线_2026新托福真题\\2026-03-30(口语仅Q1-5_音频需解压)\\3.30阅读.pdf"], ["5_3.30写作", "02_主线_2026新托福真题\\2026-03-30(口语仅Q1-5_音频需解压)\\3.30写作.pdf"], ["6_3.30答案", "02_主线_2026新托福真题\\2026-03-30(口语仅Q1-5_音频需解压)\\3.30答案.pdf"], ["整套文件夹_2026-03-30", "02_主线_2026新托福真题\\2026-03-30(口语仅Q1-5_音频需解压)"]]}, {"n": 5, "folder": "Day05_10-12_组句+邮件写作", "src": "18套 · 官方学生版样题第1套（带解析）+ 201 Email范文", "tasks": ["【主任务 40′】官方样题第1套 Writing：Build a Sentence 10 题 + Write an Email 1 篇（7 分钟）。", "  对照「第1套（解析）」和「2026托福Email范文」，检查时态、语气（正式/半正式）、三点信息是否写全；用 writing-rubrics 自评打分。", "【其余固定节奏】阅读 25′ / 听力精听 30′ / 口语录音 25′（先 Listen & Repeat 再 Interview）/ 写作 30′ / 错题日志 10′ —— 下面写了每块今天用什么。", "  阅读 25′：样题第1套 Reading 一节。  听力 30′：「托福样题01音频」一段精听。", "  口语 25′：样题第1套 Speaking 录音。  错题日志 10′。"], "out": "组句 10 题答案 + 邮件 1 篇 + 自评分", "live": false, "links": [["1_官方样题第1套(题目)", "04_新题型套题\\18套_官方样题+体验日+备考资料\\01. 官方学生版样题2套（包含音频、答案）（第1套有解析）\\托福改革样题第1套（题目）toefl-full-length-practice.pdf"], ["2_第1套解析", "04_新题型套题\\18套_官方样题+体验日+备考资料\\01. 官方学生版样题2套（包含音频、答案）（第1套有解析）\\托福改革后题库第1套（解析）.pdf"], ["3_样题01音频", "04_新题型套题\\18套_官方样题+体验日+备考资料\\01. 官方学生版样题2套（包含音频、答案）（第1套有解析）\\托福样题01音频"], ["4_Email范文", "05_方法讲解_查阅用\\【201】新版本自学礼包\\02-2026托福Email范文.pdf"], ["5_写作评分标准", "04_新题型套题\\18套_官方样题+体验日+备考资料\\06. 口语写作评分标准\\writing-rubrics.pdf"]]}, {"n": 6, "folder": "Day06_10-13_综合小套题", "src": "13套 · 新托福官方样题01（题目 + 音频 + 答案 + 原文）", "tasks": ["【主任务 75′】官方样题01 选 阅读1节 + 听力1节 + 口语全部 + 写作1题，一口气做完（输入→输出）。", "  对答案后写 3 条错误规律（例：Complete the Words 词性判断错 / 听力转折没抓住）。", "【其余】口语录音、错题日志 10′。"], "out": "3 条错误规律", "live": false, "links": [["1_样题01题目", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方样题2套\\新托福官方样题01\\新托福官方样题01.pdf"], ["2_样题01音频", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方样题2套\\新托福官方样题01\\新托福官方模拟题01音频"], ["3_参考答案", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方样题2套\\新托福官方样题01\\参考答案-新托福官方样题01.pdf"], ["4_听力原文", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方样题2套\\新托福官方样题01\\听力原文-新托福官方样题01.pdf"]]}, {"n": 7, "folder": "Day07_10-14_周测1+Episoden连线", "src": "2026-01-27_A卷（官方式整套）", "tasks": ["【主任务·计时模考 约 2 小时，中途不暂停、不查答案】套题：02_主线\\2026-01-27_A卷", "  顺序：阅读 → 听力 → 写作 → 口语。口语：播放口语音频，每题听完立刻用手机录音。", "  做完再对「答案」，听力错题对照「听力原文」回听 2 遍。", "【复盘 20 分钟】记录四科正确率、每部分用时、最卡的 3 个点，写进 App「今日复盘」。", "【对比】和 Day01 的四科正确率、用时对比，写出进步/退步各 1 条。", "真人连线（主平台 Episoden）：打开 https://www.episoden.com/ （或手机上的 Episoden App），连 3 场 × 7 分钟 1:1 话题对话（约 21 分钟，用每日免费票券即可）。", "  开场：I'm preparing for the new TOEFL speaking test. Could you point out one pronunciation or grammar mistake at the end?", "  结束后记 3 条：①我说不清的一句 ②对方更自然的说法 ③明天要复测的句子 → 写进 App「口语实战」记录。", "  Episoden 用不了时备用：Tandem / HelloTalk（语言交换）、Cambly（付费真人老师）。"], "out": "周测成绩 + 3 条连线反馈", "live": true, "links": [["1_题目", "02_主线_2026新托福真题\\2026-01-27_A卷\\新托福2026真题04.pdf"], ["2_听力Module1", "02_主线_2026新托福真题\\2026-01-27_A卷\\新托福2026真题04ListeningModule1.mp3"], ["3_听力Module2", "02_主线_2026新托福真题\\2026-01-27_A卷\\新托福2026真题04ListeningModule2.mp3"], ["4_口语音频", "02_主线_2026新托福真题\\2026-01-27_A卷\\新托福2026真题04speakingModule1.mp3"], ["5_参考答案", "02_主线_2026新托福真题\\2026-01-27_A卷\\参考答案-新托福2026真题04.pdf"], ["6_听力原文", "02_主线_2026新托福真题\\2026-01-27_A卷\\听力原文-新托福2026真题04.pdf"], ["整套文件夹_2026-01-27_A卷", "02_主线_2026新托福真题\\2026-01-27_A卷"]]}, {"n": 8, "folder": "Day08_10-15_阅读速度_定位验证", "src": "2026-03-14 线下阅读拼版合集 + 2026-04-18 线下阅读（5填空3学术，带答案）", "tasks": ["【主任务 45′】两遍法：每篇先限时（Complete the Words 每段 ≤3′，学术篇每篇 ≤7′），做完再回原文给每题找证据句并标出来。", "  材料：「3.14 阅读-拼版合集.pdf」+「4.18 阅读-5填空3学术-带答案.pdf」。", "【其余固定节奏】阅读 25′ / 听力精听 30′ / 口语录音 25′（先 Listen & Repeat 再 Interview）/ 写作 30′ / 错题日志 10′ —— 下面写了每块今天用什么。", "  听力 30′：「2026-03-15 听力 part2」解压后精听，对照「3.15听力.pdf」。", "  写作 30′：「3.14 写作-邮件和学术.pdf」学术讨论 1 篇 10 分钟。", "  口语 25′ / 错题日志 10′。"], "out": "每篇用时 + 证据句标注", "live": false, "links": [["1_3.14阅读拼版合集", "02_主线_2026新托福真题\\2026-03-14_国内线下合集(不完整)\\阅读-拼版合集.pdf"], ["2_4.18阅读(带答案)", "02_主线_2026新托福真题\\2026-04-18_国内线下(仅读写口)\\阅读-5填空3学术-带答案.pdf"], ["3_3.14写作", "02_主线_2026新托福真题\\2026-03-14_国内线下合集(不完整)\\写作-邮件和学术.pdf"], ["4_3.15听力part2(先解压)", "02_主线_2026新托福真题\\2026-03-15(听力仅part2)\\3.15  听力 part2.m4a.zip"], ["5_3.15听力题目", "02_主线_2026新托福真题\\2026-03-15(听力仅part2)\\3.15听力.pdf"], ["6_3.15答案", "02_主线_2026新托福真题\\2026-03-15(听力仅part2)\\3.15答案.pdf"]]}, {"n": 9, "folder": "Day09_10-16_听力对话+公告", "src": "18套 · 官方体验日 Practice Test 1", "tasks": ["【主任务 45′】Experience Day Practice Test 1 的 Listening：Conversation 与 Announcement。听前看题干预测，听后用英文说出 3 句摘要并录音。对答案。", "【其余固定节奏】阅读 25′ / 听力精听 30′ / 口语录音 25′（先 Listen & Repeat 再 Interview）/ 写作 30′ / 错题日志 10′ —— 下面写了每块今天用什么。", "  阅读 25′：同套 Reading 一节。  口语 25′：同套 Speaking。  写作 30′：同套 Email。  错题日志 10′。"], "out": "每段 3 句英文摘要录音", "live": false, "links": [["1_体验日Test1(题目+答案)", "04_新题型套题\\18套_官方样题+体验日+备考资料\\03. 官方体验日3套（包含音频和答案）\\TOEFL iBT Experience Day Exclusive Pracitce Test 1.pdf"], ["2_Test1音频", "04_新题型套题\\18套_官方样题+体验日+备考资料\\03. 官方体验日3套（包含音频和答案）\\Practice Test 1 Audio Files"]]}, {"n": 10, "folder": "Day10_10-17_学术阅读+词汇", "src": "13套 · 官方模拟题01（Pack-1）+ 201 阅读高频800词", "tasks": ["【主任务 40′】官方模拟题01 的 Academic Passage 2 篇：每篇标出 主旨句、段落关系、1 个句子功能题的依据。", "【词汇 20′】从《阅读高频必考800词》挑 30 个生词，按学科归类。", "【其余固定节奏】阅读 25′ / 听力精听 30′ / 口语录音 25′（先 Listen & Repeat 再 Interview）/ 写作 30′ / 错题日志 10′ —— 下面写了每块今天用什么。", "  听力 30′：Pack-1-Listening 精听一段，对照「听力原文-pack-1」。  口语/写作按固定节奏。  错题日志 10′。"], "out": "2 篇结构标注 + 30 词", "live": false, "links": [["1_官方模拟题01", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模拟题01\\2026新托福Pack-1.pdf"], ["2_参考答案", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模拟题01\\参考答案-Pack-1.pdf"], ["3_听力原文", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模拟题01\\听力原文-pack-1.pdf"], ["4_听力音频", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模拟题01\\Pack-1-Listening"], ["5_阅读高频800词", "05_方法讲解_查阅用\\【201】新版本自学礼包\\【04】2026 新托福词汇全科\\2026托福改革阅读高频必考800词（全话题完整版）.pdf"]]}, {"n": 11, "folder": "Day11_10-18_Interview+Episoden连线", "src": "2026-05-16 线下 Interview 题+范文 + 2026-03-21 线下 7 套口语范例 + 2026-03-14 线下 Interview 视频", "tasks": ["【主任务 40′】从「5.16 Speaking Interview Questions & Model Answers」选 4 题，每题录两版：自然版（直接答）→ 修正版（看范文后重答）。", "  听「3.21 7套-口语范例」任意 2 套，模仿其结构：观点 → 理由 → 具体例子 → 收尾。", "  参考「3.14 Interview.mp4」看真实考试节奏。", "真人连线（主平台 Episoden）：打开 https://www.episoden.com/ （或手机上的 Episoden App），连 3 场 × 7 分钟 1:1 话题对话（约 21 分钟，用每日免费票券即可）。", "  开场：I'm preparing for the new TOEFL speaking test. Could you point out one pronunciation or grammar mistake at the end?", "  结束后记 3 条：①我说不清的一句 ②对方更自然的说法 ③明天要复测的句子 → 写进 App「口语实战」记录。", "  Episoden 用不了时备用：Tandem / HelloTalk（语言交换）、Cambly（付费真人老师）。"], "out": "4 题 × 2 版录音 + 3 条连线反馈", "live": true, "links": [["1_5.16 Interview题+范文", "02_主线_2026新托福真题\\2026-05-16_国内线下(仅读写口)\\口语\\2026年5月16日 TOEFL iBT Speaking Interview Questions & Model Answers.pdf"], ["2_3.21口语题目", "02_主线_2026新托福真题\\2026-03-21_国内线下合集(不完整)\\口语\\口语-题目.pdf"], ["3_3.21七套口语范例", "02_主线_2026新托福真题\\2026-03-21_国内线下合集(不完整)\\口语\\7套-口语范例"], ["4_3.14 Interview视频", "02_主线_2026新托福真题\\2026-03-14_国内线下合集(不完整)\\口语-Interview\\3.14 Interview.mp4"]]}, {"n": 12, "folder": "Day12_10-19_写作三任务串联", "src": "18套 · 官方学生版样题第2套 + 学术讨论题库", "tasks": ["【主任务 45′】官方样题第2套 Writing 一次连做：Build a Sentence 10 题 → Write an Email（7′）→ Academic Discussion（10′）。", "  用 writing-rubrics 自评；再从「2026年托福学术写作真题」题库挑 1 题写提纲（Academic Discussion 新旧题型相同，可直接用）。", "【其余固定节奏】阅读 25′ / 听力精听 30′ / 口语录音 25′（先 Listen & Repeat 再 Interview）/ 写作 30′ / 错题日志 10′ —— 下面写了每块今天用什么。", "  阅读/听力/口语用样题第2套对应部分。错题日志 10′。"], "out": "三任务成稿 + 自评分", "live": false, "links": [["1_官方样题第2套(题目)", "04_新题型套题\\18套_官方样题+体验日+备考资料\\01. 官方学生版样题2套（包含音频、答案）（第1套有解析）\\托福改革样题第2套（题目）toefl-full-length-practice-test2.pdf"], ["2_样题02音频", "04_新题型套题\\18套_官方样题+体验日+备考资料\\01. 官方学生版样题2套（包含音频、答案）（第1套有解析）\\托福样题02音频"], ["3_写作评分标准", "04_新题型套题\\18套_官方样题+体验日+备考资料\\06. 口语写作评分标准\\writing-rubrics.pdf"], ["4_学术讨论题库(2026)", "06_旧题型素材_仅专项练习\\旧_写作全套真题\\2026年托福学术写作真题（持续更新）"]]}, {"n": 13, "folder": "Day13_10-20_新题型小模考", "src": "2026-02-01_B卷（官方式整套）", "tasks": ["【主任务·计时模考 约 2 小时，中途不暂停、不查答案】套题：02_主线\\2026-02-01_B卷", "  顺序：阅读 → 听力 → 写作 → 口语。口语：播放口语音频，每题听完立刻用手机录音。", "  做完再对「答案」，听力错题对照「听力原文」回听 2 遍。", "【复盘 20 分钟】记录四科正确率、每部分用时、最卡的 3 个点，写进 App「今日复盘」。", "【重点】每部分记录时间消耗和错题类型（题型名 + 错因）。"], "out": "分部分用时 + 错题类型表", "live": false, "links": [["1_题目", "02_主线_2026新托福真题\\2026-02-01_B卷\\2026新托福真题10.pdf"], ["2_听力Module1", "02_主线_2026新托福真题\\2026-02-01_B卷\\2026新托福真题10ListeningModule1.mp3"], ["3_听力Module2", "02_主线_2026新托福真题\\2026-02-01_B卷\\2026新托福真题10ListeningModule2.mp3"], ["4_口语音频", "02_主线_2026新托福真题\\2026-02-01_B卷\\2026新托福真题10SpeakingModule1.mp3"], ["5_参考答案", "02_主线_2026新托福真题\\2026-02-01_B卷\\参考答案-2026新托福真题10.pdf"], ["6_听力原文", "02_主线_2026新托福真题\\2026-02-01_B卷\\听力原文-2026新托福真题10.pdf"], ["整套文件夹_2026-02-01_B卷", "02_主线_2026新托福真题\\2026-02-01_B卷"]]}, {"n": 14, "folder": "Day14_10-21_周测2+Episoden连线", "src": "13套 · 官方模考题02（Pack-2）", "tasks": ["【主任务·计时模考 约 2 小时，中途不暂停、不查答案】套题：04_新题型套题\\13套\\官方模考题02", "  顺序：阅读 → 听力 → 写作 → 口语。口语：播放口语音频，每题听完立刻用手机录音。", "  做完再对「答案」，听力错题对照「听力原文」回听 2 遍。", "【复盘 20 分钟】记录四科正确率、每部分用时、最卡的 3 个点，写进 App「今日复盘」。", "【对比】与 Day07 比较，保留最常见的 3 个问题。", "真人连线（主平台 Episoden）：打开 https://www.episoden.com/ （或手机上的 Episoden App），连 3 场 × 7 分钟 1:1 话题对话（约 21 分钟，用每日免费票券即可）。", "  开场：I'm preparing for the new TOEFL speaking test. Could you point out one pronunciation or grammar mistake at the end?", "  结束后记 3 条：①我说不清的一句 ②对方更自然的说法 ③明天要复测的句子 → 写进 App「口语实战」记录。", "  Episoden 用不了时备用：Tandem / HelloTalk（语言交换）、Cambly（付费真人老师）。"], "out": "周测成绩 + 3 个常见问题 + 3 条连线反馈", "live": true, "links": [["1_官方模考题02文件夹", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模考题02\\2026新托福Pack-2"]]}, {"n": 15, "folder": "Day15_10-22_自适应套题A", "src": "2026-02-10（官方式整套）", "tasks": ["【主任务·计时模考 约 2 小时，中途不暂停、不查答案】套题：02_主线\\2026-02-10", "  顺序：阅读 → 听力 → 写作 → 口语。口语：播放口语音频，每题听完立刻用手机录音。", "  做完再对「答案」，听力错题对照「听力原文」回听 2 遍。", "【复盘 20 分钟】记录四科正确率、每部分用时、最卡的 3 个点，写进 App「今日复盘」。", "【策略】先保准确；对照 Day13 的每部分用时，目标每题再快 10%。"], "out": "成绩 + 用时对比", "live": false, "links": [["1_题目", "02_主线_2026新托福真题\\2026-02-10\\2026新托福真题12.pdf"], ["2_听力Module1", "02_主线_2026新托福真题\\2026-02-10\\2026新托福真题12ListeningModule1.mp3"], ["3_听力Module2", "02_主线_2026新托福真题\\2026-02-10\\2026新托福真题12ListeningModule2.mp3"], ["4_口语音频", "02_主线_2026新托福真题\\2026-02-10\\2026新托福真题12SpeakingModule1.mp3"], ["5_参考答案", "02_主线_2026新托福真题\\2026-02-10\\参考答案-2026新托福真题12.pdf"], ["6_听力原文", "02_主线_2026新托福真题\\2026-02-10\\听力原文-2026新托福真题12.pdf"], ["整套文件夹_2026-02-10", "02_主线_2026新托福真题\\2026-02-10"]]}, {"n": 16, "folder": "Day16_10-23_口语复述+Episoden连线", "src": "18套 · 官方体验日 Practice Test 2", "tasks": ["【主任务 40′】Experience Day Practice Test 2：Speaking 全部录音；再选 Listening 的 Academic Talk 2 段，听后 60 秒复述，保留 人物/动作/结果 三类信息。", "【其余固定节奏】阅读 25′ / 听力精听 30′ / 口语录音 25′（先 Listen & Repeat 再 Interview）/ 写作 30′ / 错题日志 10′ —— 下面写了每块今天用什么。", "  阅读/写作用同套对应部分。", "真人连线（主平台 Episoden）：打开 https://www.episoden.com/ （或手机上的 Episoden App），连 3 场 × 7 分钟 1:1 话题对话（约 21 分钟，用每日免费票券即可）。", "  开场：I'm preparing for the new TOEFL speaking test. Could you point out one pronunciation or grammar mistake at the end?", "  结束后记 3 条：①我说不清的一句 ②对方更自然的说法 ③明天要复测的句子 → 写进 App「口语实战」记录。", "  Episoden 用不了时备用：Tandem / HelloTalk（语言交换）、Cambly（付费真人老师）。"], "out": "复述录音 + 3 条连线反馈", "live": true, "links": [["1_体验日Test2(题目+答案)", "04_新题型套题\\18套_官方样题+体验日+备考资料\\03. 官方体验日3套（包含音频和答案）\\TOEFL iBT Experience Day Exclusive Pracitce Test 2.pdf"], ["2_Test2音频", "04_新题型套题\\18套_官方样题+体验日+备考资料\\03. 官方体验日3套（包含音频和答案）\\Practice Test 2 Audio Files"]]}, {"n": 17, "folder": "Day17_10-24_自适应套题B", "src": "2026-03-14（官方式整套）", "tasks": ["【主任务·计时模考 约 2 小时，中途不暂停、不查答案】套题：02_主线\\2026-03-14", "  顺序：阅读 → 听力 → 写作 → 口语。口语：播放口语音频，每题听完立刻用手机录音。", "  做完再对「答案」，听力错题对照「听力原文」回听 2 遍。", "【复盘 20 分钟】记录四科正确率、每部分用时、最卡的 3 个点，写进 App「今日复盘」。", "【做法】阅读与听力交替：阅读 Module1 → 听力 Module1 → 阅读 Module2 → 听力 Module2，练疲劳下的稳定性。"], "out": "成绩 + 后半程掉分点", "live": false, "links": [["1_题目", "02_主线_2026新托福真题\\2026-03-14\\2026新托福真题.pdf"], ["2_听力Module1", "02_主线_2026新托福真题\\2026-03-14\\2026新托福真题ListeningModule1.mp3"], ["3_听力Module2", "02_主线_2026新托福真题\\2026-03-14\\2026新托福真题15ListeningModule2.mp3"], ["4_口语音频", "02_主线_2026新托福真题\\2026-03-14\\2026新托福真题SpeakingModule1.mp3"], ["5_参考答案", "02_主线_2026新托福真题\\2026-03-14\\参考答案-2026新托福真题.pdf"], ["6_听力原文", "02_主线_2026新托福真题\\2026-03-14\\听力原文-2026新托福真题.pdf"], ["整套文件夹_2026-03-14", "02_主线_2026新托福真题\\2026-03-14"]]}, {"n": 18, "folder": "Day18_10-25_写作限时", "src": "13套 · 官方模考题03（Pack-3）写作部分 + 学术讨论题库", "tasks": ["【主任务 45′】Pack-3 的 Academic Discussion：10 分钟成稿 → 5 分钟自改（逻辑、例子、语法）。再从学术讨论题库计时写 1 篇。", "  Pack-3 的 Email 题 7 分钟写 1 篇。", "【其余固定节奏】阅读 25′ / 听力精听 30′ / 口语录音 25′（先 Listen & Repeat 再 Interview）/ 写作 30′ / 错题日志 10′ —— 下面写了每块今天用什么。", "  阅读/听力/口语用 Pack-3 对应部分。"], "out": "2 篇学术讨论（原稿 + 修改稿）", "live": false, "links": [["1_官方模考题03", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模考题03\\2026新托福Pack-3.pdf"], ["2_参考答案", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模考题03\\参考答案-Pack-3-.pdf"], ["3_学术讨论题库(2026)", "06_旧题型素材_仅专项练习\\旧_写作全套真题\\2026年托福学术写作真题（持续更新）"], ["4_写作评分标准", "04_新题型套题\\18套_官方样题+体验日+备考资料\\06. 口语写作评分标准\\writing-rubrics.pdf"]]}, {"n": 19, "folder": "Day19_10-26_弱项专攻+Episoden连线", "src": "18套 · 付费新题2套 / TOEFL Essentials母题3套（按错题表选）", "tasks": ["【主任务 50′】打开错题表，选错最多的 2 个题型：在「付费新题2套」（分 lower/upper level）或「Essentials 母题3套」里只做这 2 个题型。不按感觉选题。", "真人连线（主平台 Episoden）：打开 https://www.episoden.com/ （或手机上的 Episoden App），连 3 场 × 7 分钟 1:1 话题对话（约 21 分钟，用每日免费票券即可）。", "  开场：I'm preparing for the new TOEFL speaking test. Could you point out one pronunciation or grammar mistake at the end?", "  结束后记 3 条：①我说不清的一句 ②对方更自然的说法 ③明天要复测的句子 → 写进 App「口语实战」记录。", "  Episoden 用不了时备用：Tandem / HelloTalk（语言交换）、Cambly（付费真人老师）。"], "out": "2 个弱项题型复测正确率 + 3 条连线反馈", "live": true, "links": [["1_付费新题2套", "04_新题型套题\\18套_官方样题+体验日+备考资料\\04. 付费新题2套 (包含音频和答案）"], ["2_Essentials母题3套", "04_新题型套题\\18套_官方样题+体验日+备考资料\\05. TOEFL Essentials母题3套（题目、听力原文、音频和答案）"]]}, {"n": 20, "folder": "Day20_10-27_完整模考2", "src": "2026-04-08（分科 PDF + 听力/口语音频，完整）", "tasks": ["【主任务·计时模考 约 2 小时，中途不暂停、不查答案】套题：02_主线\\2026-04-08（口语题在音频里）", "  顺序：阅读 → 听力 → 写作 → 口语。口语：播放口语音频，每题听完立刻用手机录音。", "  做完再对「答案」，听力错题对照「听力原文」回听 2 遍。", "【复盘 20 分钟】记录四科正确率、每部分用时、最卡的 3 个点，写进 App「今日复盘」。", "【环境】关手机通知、用耳机、按考试时间段做；写下每部分时间和失分点。"], "out": "模考成绩 + 失分点", "live": false, "links": [["1_阅读", "02_主线_2026新托福真题\\2026-04-08\\4.8阅读.pdf"], ["2_听力音频", "02_主线_2026新托福真题\\2026-04-08\\4.8 听力.m4a"], ["3_听力题目", "02_主线_2026新托福真题\\2026-04-08\\4.8听力.pdf"], ["4_写作", "02_主线_2026新托福真题\\2026-04-08\\4.8写作.pdf"], ["5_口语音频", "02_主线_2026新托福真题\\2026-04-08\\4.8 口语.m4a"], ["6_答案", "02_主线_2026新托福真题\\2026-04-08\\4.8答案.pdf"], ["整套文件夹_2026-04-08", "02_主线_2026新托福真题\\2026-04-08"]]}, {"n": 21, "folder": "Day21_10-28_模考复盘+轻量输入+Episoden", "src": "201 · 2026 新托福词汇全科 + Email 范文", "tasks": ["【主任务 40′】复盘 Day20：错题逐题写原因。然后从口语300词/写作500词和 Email 范文里整理 10 个可复用表达（开头、转折、举例、收尾）。", "【连线】Episoden 今天不超过 20 分钟（2–3 场），专门试用这 10 个表达。", "真人连线（主平台 Episoden）：打开 https://www.episoden.com/ （或手机上的 Episoden App），连 3 场 × 7 分钟 1:1 话题对话（约 21 分钟，用每日免费票券即可）。", "  开场：I'm preparing for the new TOEFL speaking test. Could you point out one pronunciation or grammar mistake at the end?", "  结束后记 3 条：①我说不清的一句 ②对方更自然的说法 ③明天要复测的句子 → 写进 App「口语实战」记录。", "  Episoden 用不了时备用：Tandem / HelloTalk（语言交换）、Cambly（付费真人老师）。"], "out": "10 个可复用表达 + 连线反馈", "live": true, "links": [["1_词汇全科文件夹", "05_方法讲解_查阅用\\【201】新版本自学礼包\\【04】2026 新托福词汇全科"], ["2_口语五大话题300词", "05_方法讲解_查阅用\\【201】新版本自学礼包\\【04】2026 新托福词汇全科\\2026托福改革后口语五大话题高频300词完整版.pdf"], ["3_写作六大话题500词", "05_方法讲解_查阅用\\【201】新版本自学礼包\\【04】2026 新托福词汇全科\\2026托福改革后写作六大话题500高频核心词汇.pdf"], ["4_Email范文", "05_方法讲解_查阅用\\【201】新版本自学礼包\\02-2026托福Email范文.pdf"]]}, {"n": 22, "folder": "Day22_10-29_完整模考3", "src": "2026-05-18（docx + 音频，完整）", "tasks": ["【主任务·计时模考 约 2 小时，中途不暂停、不查答案】套题：02_主线\\2026-05-18", "  顺序：阅读 → 听力 → 写作 → 口语。口语：播放口语音频，每题听完立刻用手机录音。", "  做完再对「答案」，听力错题对照「听力原文」回听 2 遍。", "【复盘 20 分钟】记录四科正确率、每部分用时、最卡的 3 个点，写进 App「今日复盘」。", "【抗干扰】全部做完才查答案。"], "out": "模考成绩", "live": false, "links": [["1_阅读", "02_主线_2026新托福真题\\2026-05-18\\5.18 阅读.docx"], ["2_听力音频", "02_主线_2026新托福真题\\2026-05-18\\5.18 听力.m4a\\5.18 听力.m4a"], ["3_听力题目", "02_主线_2026新托福真题\\2026-05-18\\5.18 听力.docx"], ["4_写作", "02_主线_2026新托福真题\\2026-05-18\\5.18 写作.docx"], ["5_口语题目", "02_主线_2026新托福真题\\2026-05-18\\5.18 口语.docx"], ["6_口语音频", "02_主线_2026新托福真题\\2026-05-18\\5.18 口语.m4a\\5.18 口语.m4a"], ["7_答案", "02_主线_2026新托福真题\\2026-05-18\\5.18 答案.docx"], ["整套文件夹_2026-05-18", "02_主线_2026新托福真题\\2026-05-18"]]}, {"n": 23, "folder": "Day23_10-30_错误模式修复", "src": "13套 · 官方模考题05 / 06（只做最常错的三类题）", "tasks": ["【主任务 60′】列出最常错的 3 类题，只在 Pack-5、Pack-6 里做这 3 类，各复测一组，对答案后写改法。"], "out": "3 类题复测正确率", "live": false, "links": [["1_官方模考题05", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模考题05\\2026新托福Pack-5.pdf"], ["2_05答案", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模考题05\\参考答案-pack-5.pdf"], ["3_官方模考题06", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模考题06\\2026新托福Pack-6.pdf"], ["4_06答案", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模考题06\\参考答案-pack-6.pdf"], ["5_05听力音频", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模考题05\\Pack5-listening"], ["6_06听力音频", "04_新题型套题\\13套_官方模拟题1-11+样题2\\新托福官方模拟题1-11套\\官方模考题06\\Pack6-listening"]]}, {"n": 24, "folder": "Day24_10-31_口语写作输出日+Episoden", "src": "18套 · 官方体验日 Practice Test 3", "tasks": ["【主任务 50′】Experience Day Practice Test 3：录 8 题口语（Listen & Repeat + Interview），写 1 篇 Academic Discussion，逐句修订。", "真人连线（主平台 Episoden）：打开 https://www.episoden.com/ （或手机上的 Episoden App），连 3 场 × 7 分钟 1:1 话题对话（约 21 分钟，用每日免费票券即可）。", "  开场：I'm preparing for the new TOEFL speaking test. Could you point out one pronunciation or grammar mistake at the end?", "  结束后记 3 条：①我说不清的一句 ②对方更自然的说法 ③明天要复测的句子 → 写进 App「口语实战」记录。", "  Episoden 用不了时备用：Tandem / HelloTalk（语言交换）、Cambly（付费真人老师）。"], "out": "8 题录音 + 1 篇修订稿 + 连线反馈", "live": true, "links": [["1_体验日Test3(题目+答案)", "04_新题型套题\\18套_官方样题+体验日+备考资料\\03. 官方体验日3套（包含音频和答案）\\TOEFL iBT Experience Day Exclusive Pracitce Test 3.pdf"], ["2_Test3音频", "04_新题型套题\\18套_官方样题+体验日+备考资料\\03. 官方体验日3套（包含音频和答案）\\Practice Test 3 Audio Files"]]}, {"n": 25, "folder": "Day25_11-01_完整模考4", "src": "2026-05-23（docx + 音频，完整）", "tasks": ["【主任务·计时模考 约 2 小时，中途不暂停、不查答案】套题：02_主线\\2026-05-23", "  顺序：阅读 → 听力 → 写作 → 口语。口语：播放口语音频，每题听完立刻用手机录音。", "  做完再对「答案」，听力错题对照「听力原文」回听 2 遍。", "【复盘 20 分钟】记录四科正确率、每部分用时、最卡的 3 个点，写进 App「今日复盘」。", "【模拟考试当天】用考试当天的耳机、键盘和时间段。"], "out": "模考成绩", "live": false, "links": [["1_阅读", "02_主线_2026新托福真题\\2026-05-23\\5.23 阅读.docx"], ["2_听力音频", "02_主线_2026新托福真题\\2026-05-23\\5.23 听力.m4a\\听力.m4a"], ["3_听力题目", "02_主线_2026新托福真题\\2026-05-23\\5.23 听力.docx"], ["4_写作", "02_主线_2026新托福真题\\2026-05-23\\5.23 写作.docx"], ["5_口语题目", "02_主线_2026新托福真题\\2026-05-23\\5.23 口语.docx"], ["6_口语音频", "02_主线_2026新托福真题\\2026-05-23\\5.23 口语.m4a\\口语.m4a"], ["7_答案", "02_主线_2026新托福真题\\2026-05-23\\5.23 答案.docx"], ["整套文件夹_2026-05-23", "02_主线_2026新托福真题\\2026-05-23"]]}, {"n": 26, "folder": "Day26_11-02_发音抛光+Episoden连线", "src": "201 口语五大话题300词 + 官方 speaking-rubrics", "tasks": ["【主任务 30′】对照 speaking-rubrics 的 Delivery 要求，用口语300词里的话题句练重音和意群，录音自听。", "【连线】让对方只纠正：清晰度、重音、一个语法点。", "真人连线（主平台 Episoden）：打开 https://www.episoden.com/ （或手机上的 Episoden App），连 3 场 × 7 分钟 1:1 话题对话（约 21 分钟，用每日免费票券即可）。", "  开场：I'm preparing for the new TOEFL speaking test. Could you point out one pronunciation or grammar mistake at the end?", "  结束后记 3 条：①我说不清的一句 ②对方更自然的说法 ③明天要复测的句子 → 写进 App「口语实战」记录。", "  Episoden 用不了时备用：Tandem / HelloTalk（语言交换）、Cambly（付费真人老师）。"], "out": "发音纠正 3 条", "live": true, "links": [["1_口语五大话题300词", "05_方法讲解_查阅用\\【201】新版本自学礼包\\【04】2026 新托福词汇全科\\2026托福改革后口语五大话题高频300词完整版.pdf"], ["2_口语评分标准", "04_新题型套题\\18套_官方样题+体验日+备考资料\\06. 口语写作评分标准\\speaking-rubrics.pdf"]]}, {"n": 27, "folder": "Day27_11-03_最后完整模考", "src": "2026-06-20（PDF + 音频，完整）", "tasks": ["【主任务·计时模考 约 2 小时，中途不暂停、不查答案】套题：02_主线\\2026-06-20", "  顺序：阅读 → 听力 → 写作 → 口语。口语：播放口语音频，每题听完立刻用手机录音。", "  做完再对「答案」，听力错题对照「听力原文」回听 2 遍。", "【复盘 20 分钟】记录四科正确率、每部分用时、最卡的 3 个点，写进 App「今日复盘」。", "【目的】验证目标分是否稳定，不再追求刷题数量。"], "out": "模考成绩", "live": false, "links": [["1_阅读", "02_主线_2026新托福真题\\2026-06-20\\阅读.pdf"], ["2_听力音频", "02_主线_2026新托福真题\\2026-06-20\\听力音频.m4a"], ["3_听力题目", "02_主线_2026新托福真题\\2026-06-20\\听力.pdf"], ["4_写作", "02_主线_2026新托福真题\\2026-06-20\\写作.pdf"], ["5_口语音频(视频)", "02_主线_2026新托福真题\\2026-06-20\\口语音频.mp4"], ["6_答案", "02_主线_2026新托福真题\\2026-06-20\\答案.pdf"], ["整套文件夹_2026-06-20", "02_主线_2026新托福真题\\2026-06-20"]]}, {"n": 28, "folder": "Day28_11-04_错题本回炉", "src": "官方OG第7版 + 评分标准", "tasks": ["【主任务 60′】通读自己 27 天的错题日志，只保留 规律 / 模板 / 高频错误，删掉无效笔记；对照 OG 和评分标准确认模板没问题。"], "out": "一页纸的错误清单", "live": false, "links": [["1_OG官方指南第7版PDF", "03_官方OG\\OG官方指南第7版(PDF+音频)\\托福OG官方指南(第7版).pdf"], ["2_评分标准文件夹", "04_新题型套题\\18套_官方样题+体验日+备考资料\\06. 口语写作评分标准"]]}, {"n": 29, "folder": "Day29_11-05_考场彩排+Episoden连线", "src": "2026-06-15（PDF + 分段音频）", "tasks": ["【主任务 90′】按考试当天流程彩排：设备检查（耳机、麦克风、网络）→ 用 2026-06-15 做阅读 + 听力各一个 Module + 口语全部 → 练开场表达。", "【连线】最后一次短连线（1–2 场 Episoden 即可）。", "真人连线（主平台 Episoden）：打开 https://www.episoden.com/ （或手机上的 Episoden App），连 3 场 × 7 分钟 1:1 话题对话（约 21 分钟，用每日免费票券即可）。", "  开场：I'm preparing for the new TOEFL speaking test. Could you point out one pronunciation or grammar mistake at the end?", "  结束后记 3 条：①我说不清的一句 ②对方更自然的说法 ③明天要复测的句子 → 写进 App「口语实战」记录。", "  Episoden 用不了时备用：Tandem / HelloTalk（语言交换）、Cambly（付费真人老师）。"], "out": "设备检查清单 + 彩排用时", "live": true, "links": [["1_阅读", "02_主线_2026新托福真题\\2026-06-15\\阅读.pdf"], ["2_听力音频", "02_主线_2026新托福真题\\2026-06-15\\听力音频"], ["3_听力题目", "02_主线_2026新托福真题\\2026-06-15\\听力.pdf"], ["4_口语题目", "02_主线_2026新托福真题\\2026-06-15\\口语.pdf"], ["5_口语音频", "02_主线_2026新托福真题\\2026-06-15\\口语音频"], ["6_写作", "02_主线_2026新托福真题\\2026-06-15\\写作.pdf"], ["7_答案", "02_主线_2026新托福真题\\2026-06-15\\答案.pdf"], ["整套文件夹_2026-06-15", "02_主线_2026新托福真题\\2026-06-15"]]}, {"n": 30, "folder": "Day30_11-06_收束与考试策略", "src": "新版OG袖珍版 + 官方改革后综述", "tasks": ["【主任务 40′】轻量复习：翻一遍 OG 袖珍版各题型说明和官方综述，确认每部分时间与题型顺序。", "准备证件和设备、保证睡眠，不开新难题。"], "out": "考前清单", "live": false, "links": [["1_新版OG袖珍版", "03_官方OG\\新版OG袖珍版PocketEdition(PDF+音视频)\\The Official Guide to the TOEFL iBT Test_ Pocket Edition (Limited Digital Release).pdf"], ["2_官方改革后综述", "04_新题型套题\\18套_官方样题+体验日+备考资料\\官方改革后综述 toefl-ibt-test-overview.pdf"]]}];          // 每日任务详情（来自 01_每日任务_30天\DayXX\今日任务.txt）
+const SEED = {"v": 1, "start_date": "2026-10-08", "target_band": 5.0, "completed": {}, "notes": {}, "speaking_logs": [], "scores": {}, "_ts": {}};          // progress.json 初始内容
+const STORE = "https://textdb.dev/api/data/";
+const EPISODEN = "https://www.episoden.com/";
+const LS_STATE = "toefl30.state", LS_SYNC = "toefl30.syncId";
+
+/* ---------- 与 TOEFL30Study.exe 完全一致的 30 天任务 ---------- */
+const META = [
+["基线：完整做一套新题型","摸底、建错题表和录音档案","校准",0,"new_real"],["完成单词 + 日常阅读","阅读速度与高频学术词","校准",0,"official_og"],["听力选择题与公告","抓关键词、态度和转折","校准",0,"new_real"],["听后复述基础","语音、重音、意群和短时记忆","校准",0,"new_real"],["组句 + 邮件写作","句子准确度和语气控制","校准",0,"new18"],["综合小套题","把输入转成输出","校准",0,"new13"],["周测 1 + 真实对话","第一次完整计时与口语反馈","校准",1,"new_real"],
+["阅读速度升级","两遍法：定位、验证","增量",0,"new_real"],["听力对话与公告","听前预测、听后复述","增量",0,"new18"],["学术阅读 + 词汇","主旨、关系、句子功能","增量",0,"new13"],["口语 Interview","回答完整、自然、具体","增量",1,"new_real"],["写作三任务串联","组句、邮件、学术讨论","增量",0,"new18"],["新题型小模考","在压力下保持节奏","增量",0,"new_real"],["周测 2 + 真实对话","比较第 1 周的错误变化","增量",1,"new13"],
+["自适应套题 A","先保准确，再提速度","提速",0,"new_real"],["口语复述 + 真实对话","复述不丢主干信息","提速",1,"new18"],["自适应套题 B","阅读与听力交替负荷","提速",0,"new_real"],["写作限时","10 分钟学术讨论成稿","提速",0,"new13"],["弱项专攻 + 真实对话","用错题决定今天练什么","提速",1,"new18"],["完整模考 2","记录每部分时间和失分点","提速",0,"new_real"],["模考复盘 + 轻量输入","整理可复用表达","提速",1,"selfpack"],
+["完整模考 3","冲刺自适应节奏","冲刺",0,"new_real"],["错误模式修复","只练最常错的三类题","冲刺",0,"new13"],["口语 + 写作输出日","录音、成稿、逐句修订","冲刺",1,"new18"],["完整模考 4","模拟考试当天环境","冲刺",0,"new_real"],["真实对话 + 发音抛光","让表达更清楚而非更快","冲刺",1,"selfpack"],["最后一套完整模考","验证目标分是否稳定","冲刺",0,"new_real"],["错题本回炉","只看规律、模板和高频错误","冲刺",0,"official_og"],["考场彩排 + 真实对话","设备、时间、开场表达","冲刺",1,"new_real"],["收束与考试策略","轻量复习、睡眠和心态","冲刺",0,"official_og"]];
+const MOCK_DAYS = new Set([7,14,20,22,25,27,29]);
+function buildTasks(day){
+  const [title,focus,,live] = META[day-1];
+  if(day===1) return [
+    {label:"不查答案完成一套 2026 新题型真题",minutes:90,kind:"基线"},
+    {label:"录一段 2 分钟英文自我介绍，保存原始音频",minutes:10,kind:"口语"},
+    {label:"写一篇 10 分钟学术讨论，记录原始版本",minutes:15,kind:"写作"},
+    {label:"统计四科正确率、卡顿点和时间压力",minutes:20,kind:"复盘"}];
+  let tasks;
+  if(MOCK_DAYS.has(day)){
+    tasks = [
+      {label:"计时完成 "+title.split(" + ")[0],minutes:100,kind:"模考"},
+      {label:"口语录音：听后复述 4 题 + Interview 4 题",minutes:20,kind:"口语"},
+      {label:"写作抽查：组句 5 题 + 学术讨论 1 篇",minutes:20,kind:"写作"},
+      {label:"复盘：只写三条最值得修复的错误",minutes:15,kind:"复盘"}];
+  } else {
+    const main = ["阅读","听力","口语","写作"][day%4];
+    tasks = [
+      {label:main+"主线训练："+focus,minutes:35,kind:main},
+      {label:"听力精听 1 组：先盲听，再看原文核对",minutes:30,kind:"听力"},
+      {label:"口语：Listen & Repeat 4 题 + Interview 4 题并录音",minutes:25,kind:"口语"},
+      {label:"写作：组句/邮件/学术讨论任选一项限时完成",minutes:30,kind:"写作"},
+      {label:"错题日志：写出原因、改法和明天复测点",minutes:10,kind:"复盘"}];
+  }
+  if(live) tasks[tasks.length-1] = {label:"Episoden 真人连线 3 场（每场 7 分钟），结束后记 3 条纠错",minutes:30,kind:"实战",episoden:true};
+  return tasks;
+}
+
+/* ---------- 数据：扁平化 + 按字段“后写入者胜” ---------- */
+function flatten(doc){
+  const f = {};
+  if(doc.start_date!==undefined) f["start_date"]=doc.start_date;
+  if(doc.target_band!==undefined) f["target_band"]=doc.target_band;
+  for(const [d,arr] of Object.entries(doc.completed||{})) (arr||[]).forEach((v,i)=>{f[`completed.${d}.${i}`]=!!v});
+  for(const [d,t] of Object.entries(doc.notes||{})) f[`notes.${d}`]=t;
+  for(const l of (doc.speaking_logs||[])) if(l&&l.id) f[`log.${l.id}`]=l;
+  for(const [id,s] of Object.entries(doc.scores||{})) f[`score.${id}`]=s;
+  return f;
+}
+function unflatten(f, ts){
+  const doc = {v:1,start_date:"2026-10-08",target_band:5.0,completed:{},notes:{},speaking_logs:[],scores:{},_ts:ts||{}};
+  const logs = [];
+  for(const [k,v] of Object.entries(f)){
+    const p = k.split(".");
+    if(k==="start_date"||k==="target_band") doc[k]=v;
+    else if(p[0]==="completed"){ const a = doc.completed[p[1]] || (doc.completed[p[1]]=[]); a[+p[2]]=v; }
+    else if(p[0]==="notes") doc.notes[p[1]]=v;
+    else if(p[0]==="log") logs.push(v);
+    else if(p[0]==="score") doc.scores[p.slice(1).join(".")]=v;
+  }
+  for(const a of Object.values(doc.completed)) for(let i=0;i<a.length;i++) if(a[i]===undefined) a[i]=false;
+  logs.sort((x,y)=>(x.ts||0)-(y.ts||0)); doc.speaking_logs = logs;
+  return doc;
+}
+function merge(a, b){
+  const fa=flatten(a), fb=flatten(b), ta=a._ts||{}, tb=b._ts||{};
+  const out={}, ts={};
+  for(const k of new Set([...Object.keys(fa),...Object.keys(fb)])){
+    const inA = k in fa, inB = k in fb, sa = ta[k]||0, sb = tb[k]||0;
+    let v, s;
+    if(inA && !inB){v=fa[k];s=sa} else if(inB && !inA){v=fb[k];s=sb}
+    else if(sa>sb){v=fa[k];s=sa} else if(sb>sa){v=fb[k];s=sb}
+    else { s=sa; const x=fa[k], y=fb[k];
+      if(typeof x==="boolean") v = x||y; else v = (JSON.stringify(x)>=JSON.stringify(y)) ? x : y; }
+    out[k]=v; if(s) ts[k]=s;
+  }
+  return unflatten(out, ts);
+}
+function sameDoc(a,b){ return JSON.stringify(canon(a))===JSON.stringify(canon(b)); }
+function canon(d){ const f=flatten(d), o={}; for(const k of Object.keys(f).sort()) o[k]=[f[k], (d._ts||{})[k]||0]; return o; }
+
+let state = loadLocal();
+function loadLocal(){ try{ const s = JSON.parse(localStorage.getItem(LS_STATE)); if(s && s.v) return s; }catch(e){} return merge(SEED,{}); }
+function saveLocal(){ try{ localStorage.setItem(LS_STATE, JSON.stringify(state)); }catch(e){} }
+function setField(path, value){
+  const f = flatten(state); f[path]=value; state._ts = state._ts||{}; state._ts[path]=Date.now();
+  state = unflatten(f, state._ts); saveLocal(); scheduleSync();
+}
+
+/* ---------- 同步（textdb.dev，一个同步码 = 一份共享进度） ---------- */
+function getSyncId(){
+  const m = location.hash.match(/sync=([A-Za-z0-9_-]{16,80})/);
+  if(m){ localStorage.setItem(LS_SYNC, m[1]); return m[1]; }
+  const ls = localStorage.getItem(LS_SYNC);
+  if(ls) return ls;
+  if(window.PRESET_SYNC){ localStorage.setItem(LS_SYNC, window.PRESET_SYNC); return window.PRESET_SYNC; }
+  return "";
+}
+let syncId = getSyncId(), syncTimer=null, syncing=false, lastSync=0, syncErr="";
+function setSyncLabel(){
+  const el = document.getElementById("sync");
+  if(!syncId){ el.textContent="未设置同步码"; el.className="err"; return; }
+  if(syncing){ el.textContent="同步中…"; el.className=""; return; }
+  if(syncErr){ el.textContent="离线 · 已存本机"; el.className="err"; return; }
+  if(lastSync){ const d=new Date(lastSync); el.textContent="已同步 "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); el.className="ok"; }
+}
+function scheduleSync(){ clearTimeout(syncTimer); syncTimer = setTimeout(syncNow, 800); }
+async function fetchRemote(){
+  const r = await fetch(STORE+encodeURIComponent(syncId)+"?t="+Date.now(), {cache:"no-store"});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  const t = (await r.text()).trim();
+  if(!t) return {};
+  const j = JSON.parse(t); return (j && typeof j==="object") ? j : {};
+}
+async function pushRemote(doc){
+  const r = await fetch(STORE+encodeURIComponent(syncId), {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(doc)});
+  if(!r.ok) throw new Error("HTTP "+r.status);
+}
+async function syncNow(){
+  if(!syncId || syncing) return;
+  syncing=true; setSyncLabel();
+  try{
+    const remote = await fetchRemote();
+    const merged = merge(state, remote);
+    const changedLocal = !sameDoc(merged, state);
+    if(!sameDoc(merged, remote)) await pushRemote(merged);
+    state = merged; saveLocal(); lastSync=Date.now(); syncErr="";
+    if(changedLocal) render();
+  }catch(e){ syncErr=String(e); }
+  syncing=false; setSyncLabel();
+}
+setInterval(()=>{ if(document.visibilityState==="visible") syncNow(); }, 30000);
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible") syncNow(); });
+window.addEventListener("online", syncNow);
+
+/* ---------- 计算 ---------- */
+const pad = n=>String(n).padStart(2,"0");
+function parseDate(s){ const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function currentDay(){ const s=parseDate(state.start_date||"2026-10-08"), t=parseDate(todayStr()); return Math.min(30, Math.max(1, Math.round((t-s)/86400000)+1)); }
+function dayDate(day){ const s=parseDate(state.start_date||"2026-10-08"); s.setDate(s.getDate()+day-1); return s; }
+function completedFor(day){ const n=buildTasks(day).length, raw=(state.completed||{})[String(day)]||[]; return Array.from({length:n},(_,i)=>!!raw[i]); }
+function dayProgress(day){ const v=completedFor(day); return [v.filter(Boolean).length, v.length]; }
+function totalProgress(){ let d=0,t=0; for(let i=1;i<=30;i++){ const [a,b]=dayProgress(i); d+=a; t+=b; } return [d,t]; }
+function streak(){ let s=0; for(let d=currentDay(); d>=1; d--){ const [a,b]=dayProgress(d); if(b&&a===b) s++; else break; } return s; }
+const WD=["周日","周一","周二","周三","周四","周五","周六"];
+const esc = s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(t){ const el=document.getElementById("toast"); el.textContent=t; el.classList.add("on"); setTimeout(()=>el.classList.remove("on"),1500); }
+
+/* ---------- 视图 ---------- */
+let view="today", selDay=currentDay(), timerEnd=0, timerIv=null;
+function render(){
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on", b.dataset.v===view));
+  const v = document.getElementById("view");
+  if(!syncId && view!=="set"){ v.innerHTML = setupHTML(); bindSetup(); return; }
+  ({today:renderToday, plan:renderPlan, speak:renderSpeak, score:renderScore, set:renderSet})[view](v);
+  setSyncLabel();
+}
+function setupHTML(){
+  return `<div class="card"><h2>先设置同步码</h2><p class="muted">同一个同步码 = 同一份打卡进度。iPhone、iPad、电脑都用同一个同步码，进度就会自动同步。</p>
+  <div class="field"><label>已有同步码（从另一台设备的「设置」里复制）</label><input type="text" id="sid" autocapitalize="off" autocomplete="off" placeholder="toefl30-…"></div>
+  <button class="primary" id="useSid">使用这个同步码</button></div>`;
+}
+function bindSetup(){
+  document.getElementById("useSid").onclick=()=>{ const s=document.getElementById("sid").value.trim(); if(!/^[A-Za-z0-9_-]{16,80}$/.test(s)){ toast("同步码格式不对"); return; } syncId=s; localStorage.setItem(LS_SYNC,s); render(); syncNow(); };
+}
+function renderToday(v){
+  const day=selDay, [title,focus,phase,live]=META[day-1], D=DAYS[day-1], dt=dayDate(day);
+  const [done,total]=dayProgress(day), [ad,at]=totalProgress(), vals=completedFor(day), tasks=buildTasks(day);
+  const isToday = day===currentDay();
+  v.innerHTML = `
+  <div class="card">
+    <div class="eyebrow">${dt.getFullYear()}年${pad(dt.getMonth()+1)}月${pad(dt.getDate())}日 ${WD[dt.getDay()]} / 第 ${pad(day)} 天 / ${phase}${isToday?" · 今天":""}</div>
+    <div class="title">${esc(title)}</div><div class="muted">${esc(focus)}</div>
+    <div class="daynav"><button id="prev" ${day<=1?"disabled":""}>‹ 前一天</button><button id="gotoday">回到今天</button><button id="next" ${day>=30?"disabled":""}>后一天 ›</button></div>
+  </div>
+  <div class="stats"><div class="stat"><b>${done}/${total}</b><span>今日完成</span></div><div class="stat"><b>${ad}/${at}</b><span>30天进度</span></div><div class="stat"><b>${streak()} 天</b><span>连续完成</span></div></div>
+  <div class="card"><h2>今日任务</h2><div class="muted" style="margin-bottom:6px">完成一个，立刻打勾。</div>
+    ${tasks.map((t,i)=>`<div class="task ${vals[i]?"done":""}"><input type="checkbox" id="t${i}" data-i="${i}" ${vals[i]?"checked":""}><label for="t${i}">${esc(t.label)}<small>${esc(t.kind)} · ${t.minutes} 分钟</small></label>${t.episoden?`<a class="btn" href="${EPISODEN}" target="_blank" rel="noopener">Episoden</a>`:`<button class="ghost" data-min="${t.minutes}">计时</button>`}</div>`).join("")}
+  </div>
+  <div class="card row"><div class="timer" id="timer">25:00</div><button class="amber" id="t25">25 分钟专注</button><button id="tstop">停止</button></div>
+  <div class="card"><h2>今天具体做什么</h2><div class="muted">主要资料：${esc(D.src)}</div><p class="steps" style="margin-top:8px">${esc(D.tasks.join("\n"))}</p>
+    <div class="muted" style="margin-top:8px">今日输出：${esc(D.out)}</div>
+    ${live?`<a class="btn primary" style="margin-top:10px;width:100%" href="${EPISODEN}" target="_blank" rel="noopener">打开 Episoden 真人连线</a>`:""}</div>
+  <div class="card"><h2>今日资料</h2><div class="muted" style="margin-bottom:6px">电脑上打开 D:\\BaiduNetdiskDownload\\01_每日任务_30天\\${esc(D.folder)}，双击同名快捷方式。</div>
+    ${D.links.map(l=>`<div class="mat">${esc(l[0])}<code>${esc(l[1])}</code></div>`).join("")}</div>
+  <div class="card"><h2>今日复盘</h2><div class="muted">写一句最具体的发现，明天直接复测。自动保存。</div>
+    <textarea id="note" placeholder="例：听力 Announcement 的转折词没抓住……">${esc((state.notes||{})[String(day)]||"")}</textarea></div>`;
+  v.querySelectorAll(".task input").forEach(cb=>cb.onchange=()=>{ setField(`completed.${day}.${cb.dataset.i}`, cb.checked); render(); });
+  v.querySelectorAll("button[data-min]").forEach(b=>b.onclick=()=>startTimer(+b.dataset.min));
+  document.getElementById("prev").onclick=()=>{selDay=Math.max(1,day-1);render();window.scrollTo(0,0)};
+  document.getElementById("next").onclick=()=>{selDay=Math.min(30,day+1);render();window.scrollTo(0,0)};
+  document.getElementById("gotoday").onclick=()=>{selDay=currentDay();render()};
+  document.getElementById("t25").onclick=()=>startTimer(25);
+  document.getElementById("tstop").onclick=stopTimer;
+  const note=document.getElementById("note"); let nt=null;
+  note.oninput=()=>{ clearTimeout(nt); nt=setTimeout(()=>{ setField(`notes.${day}`, note.value.trim()); }, 700); };
+  note.onblur=()=>{ clearTimeout(nt); const val=note.value.trim(); if(val!==((state.notes||{})[String(day)]||"")){ setField(`notes.${day}`, val); toast("复盘已保存"); } };
+  tickTimer();
+}
+function startTimer(min){ timerEnd=Date.now()+min*60000; clearInterval(timerIv); timerIv=setInterval(tickTimer,1000); tickTimer(); }
+function stopTimer(){ timerEnd=0; clearInterval(timerIv); tickTimer(); }
+function tickTimer(){ const el=document.getElementById("timer"); if(!el) return; if(!timerEnd){ el.textContent="25:00"; return; } const s=Math.max(0,Math.round((timerEnd-Date.now())/1000)); el.textContent=pad(Math.floor(s/60))+":"+pad(s%60); if(s<=0){ stopTimer(); alert("这一段完成了。花 2 分钟写下一个可复测的发现。"); } }
+function renderPlan(v){
+  const cd=currentDay();
+  v.innerHTML = `<div class="card"><div class="eyebrow">ONE MONTH / 30 DAYS</div><div class="title">四个阶段，一条主线</div><div class="muted">点任意一天进入当天任务。</div>
+  <div class="bar"><i style="width:${(()=>{const [a,b]=totalProgress();return b?Math.round(a/b*100):0})()}%"></i></div></div>
+  <div class="grid30">${META.map((m,i)=>{const d=i+1,[a,b]=dayProgress(d),dt=dayDate(d);return `<div class="dayitem ${d===cd?"today":""}" data-d="${d}"><div class="n">D${pad(d)}</div><div class="t">${esc(m[0])}<small>${pad(dt.getMonth()+1)}/${pad(dt.getDate())} ${WD[dt.getDay()]} · ${m[2]} · ${esc(DAYS[i].src.split("（")[0])}</small></div>${m[3]?'<span class="pill live">连线</span>':""}<span class="pill ${a===b&&b?"full":""}">${a}/${b}</span></div>`}).join("")}</div>`;
+  v.querySelectorAll(".dayitem").forEach(el=>el.onclick=()=>{selDay=+el.dataset.d;view="today";render();window.scrollTo(0,0)});
+}
+function renderSpeak(v){
+  const logs=(state.speaking_logs||[]).filter(l=>!l.deleted).slice().reverse();
+  v.innerHTML = `<div class="card"><h2>口语实战 · 主平台 Episoden</h2>
+   <div class="muted">每场 = 1 分钟话题视频 + 7 分钟 1:1 对话，连 3 场约 20 分钟。每周至少两次。</div>
+   <ol style="padding-left:20px;font-size:14px;margin:8px 0">
+    <li>开场：I'm preparing for the new TOEFL speaking test. Could you point out one mistake at the end?</li>
+    <li>把话题往校园、学习、科技、环境上引，用 Interview 结构回答：观点 → 理由 → 具体例子。</li>
+    <li>结束后只记三条：我说不清的一句 / 对方更自然的说法 / 明天要复测的句子。</li></ol>
+   <a class="btn primary" style="width:100%" href="${EPISODEN}" target="_blank" rel="noopener">打开 Episoden</a>
+   <div class="muted" style="margin-top:8px">备用：<a href="https://tandem.net/" target="_blank" rel="noopener">Tandem</a> · <a href="https://www.hellotalk.com/en/features/chat" target="_blank" rel="noopener">HelloTalk</a> · <a href="https://www.cambly.com/" target="_blank" rel="noopener">Cambly</a>。只用平台内置通话，不透露证件、住址、密码，不给陌生人转账。</div></div>
+  <div class="card"><h2>记录一次连线</h2>
+   <div class="row"><div class="field"><label>日期</label><input type="date" id="ld" value="${todayStr()}"></div><div class="field"><label>分钟</label><input type="number" id="lm" value="21" inputmode="numeric"></div></div>
+   <div class="row"><div class="field"><label>平台</label><select id="lp"><option>Episoden</option><option>Tandem</option><option>HelloTalk</option><option>Cambly</option><option>其他</option></select></div><div class="field"><label>话题</label><input type="text" id="lt" placeholder="campus life…"></div></div>
+   <div class="field"><label>三条反馈</label><textarea id="lf" placeholder="1. 我说不清的一句：&#10;2. 对方更自然的说法：&#10;3. 明天要复测的句子："></textarea></div>
+   <button class="primary" id="lsave" style="width:100%">保存记录</button></div>
+  <div class="card"><h2>最近的口语记录（${logs.length}）</h2>${logs.length?logs.map(l=>`<div class="log"><b>${esc(l.date)} · ${esc(l.platform)} · ${esc(l.minutes)} 分钟</b> <button class="ghost" data-del="${esc(l.id)}">删除</button><div>${esc(l.topic||"")}</div><div class="muted" style="white-space:pre-wrap">${esc(l.feedback||"")}</div></div>`).join(""):'<div class="muted">还没有记录。</div>'}</div>`;
+  document.getElementById("lsave").onclick=()=>{
+    const item={id:"L"+Date.now().toString(36)+Math.random().toString(36).slice(2,6), date:val("ld"), platform:val("lp"), minutes:val("lm"), topic:val("lt"), feedback:val("lf"), ts:Date.now()};
+    if(!item.feedback){ toast("请至少填写三条反馈"); return; }
+    setField(`log.${item.id}`, item); toast("已保存口语记录"); render();
+  };
+  v.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ if(!confirm("删除这条记录？")) return; const l=(state.speaking_logs||[]).find(x=>x.id===b.dataset.del); if(l){ setField(`log.${l.id}`, Object.assign({},l,{deleted:true})); render(); } });
+}
+function val(id){ return document.getElementById(id).value.trim(); }
+function renderScore(v){
+  const target=+state.target_band||5;
+  const list=Object.entries(state.scores||{}).map(([id,s])=>Object.assign({id},s)).filter(s=>!s.deleted).sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  const avg = s=>{ const xs=["reading","listening","speaking","writing"].map(k=>parseFloat(s[k])).filter(x=>!isNaN(x)); return xs.length? (Math.round(xs.reduce((a,b)=>a+b,0)/xs.length*2)/2).toFixed(1):"-"; };
+  v.innerHTML = `<div class="card"><h2>成绩记录</h2><div class="muted">新托福 1–6 分制，目标总分 <b style="color:var(--amber)">${target.toFixed(1)}</b>。模考/周测后记一笔，看趋势。</div></div>
+  <div class="card"><h2>新增一次成绩</h2>
+   <div class="row"><div class="field"><label>日期</label><input type="date" id="sd" value="${todayStr()}"></div><div class="field"><label>类型</label><select id="sk"><option>基线</option><option>周测</option><option>模考</option><option>专项</option><option>正式考试</option></select></div></div>
+   <div class="field"><label>套题 / 备注</label><input type="text" id="sn" placeholder="如：2026-01-21_A卷"></div>
+   <div class="row">${[["reading","阅读"],["listening","听力"],["speaking","口语"],["writing","写作"]].map(([k,n])=>`<div class="field"><label>${n}</label><input type="number" step="0.5" min="1" max="6" inputmode="decimal" id="s_${k}"></div>`).join("")}</div>
+   <button class="primary" id="ssave" style="width:100%">保存成绩</button></div>
+  <div class="card"><h2>历史（${list.length}）</h2>${list.length?list.map(s=>`<div class="log"><b>${esc(s.date)} · ${esc(s.kind)} · 总分 ${avg(s)}</b> <button class="ghost" data-del="${esc(s.id)}">删除</button><div class="muted">阅读 ${esc(s.reading||"-")} · 听力 ${esc(s.listening||"-")} · 口语 ${esc(s.speaking||"-")} · 写作 ${esc(s.writing||"-")} ${s.note?"· "+esc(s.note):""}</div></div>`).join(""):'<div class="muted">还没有成绩。第 1 天基线模考后先记一笔。</div>'}</div>`;
+  document.getElementById("ssave").onclick=()=>{
+    const s={date:val("sd"), kind:val("sk"), note:val("sn"), reading:val("s_reading"), listening:val("s_listening"), speaking:val("s_speaking"), writing:val("s_writing"), ts:Date.now()};
+    if(![s.reading,s.listening,s.speaking,s.writing].some(x=>x)){ toast("至少填一科分数"); return; }
+    setField(`score.S${Date.now().toString(36)}`, s); toast("已保存成绩"); render();
+  };
+  v.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ if(!confirm("删除这条成绩？")) return; const s=(state.scores||{})[b.dataset.del]; if(s){ setField(`score.${b.dataset.del}`, Object.assign({},s,{deleted:true})); render(); } });
+}
+function renderSet(v){
+  const link = location.href.split("#")[0] + (syncId?"#sync="+syncId:"");
+  v.innerHTML = `<div class="card"><h2>计划设置</h2>
+   <div class="field"><label>开始日期</label><input type="date" id="st" value="${esc(state.start_date)}"></div>
+   <div class="field"><label>目标总分（1–6）</label><input type="number" step="0.5" min="1" max="6" id="tb" value="${esc(state.target_band)}" inputmode="decimal"></div>
+   <button class="primary" id="saveset" style="width:100%">保存设置</button></div>
+  <div class="card"><h2>多设备同步</h2>
+   <div class="muted">同步码：</div><div style="word-break:break-all;font-family:ui-monospace,monospace;font-size:14px;margin:4px 0 8px">${esc(syncId||"（未设置）")}</div>
+   <div class="row"><button id="copylink">复制同步链接</button><button id="syncnow">立即同步</button></div>
+   <div class="muted" style="margin-top:8px">在 iPhone / iPad / 电脑上打开同一个「同步链接」，进度自动合并（每项以最后一次修改为准）。离线时先存本机，联网后自动补传。</div>
+   <div class="field" style="margin-top:10px"><label>换成另一个同步码</label><input type="text" id="sid2" autocapitalize="off" autocomplete="off" placeholder="toefl30-…"></div><button id="usesid2">切换</button></div>
+  <div class="card"><h2>备份</h2><div class="row"><button id="exp">导出 JSON</button><button id="imp">导入 JSON</button></div><input type="file" id="impf" accept=".json,application/json" class="hidden">
+   <div class="muted" style="margin-top:8px">导入会与当前进度合并，不会覆盖更新的记录。</div></div>
+  <div class="card muted">资料文件只在电脑上：D:\\BaiduNetdiskDownload\\01_每日任务_30天。电脑上的「托福30天学习控制台」也连着同一份进度。</div>`;
+  document.getElementById("saveset").onclick=()=>{ const s=val("st"), b=parseFloat(val("tb")); if(!/^\d{4}-\d{2}-\d{2}$/.test(s)||!(b>=1&&b<=6)){ toast("日期或目标分格式不对"); return; } if(s!==state.start_date) setField("start_date", s); if(b!==+state.target_band) setField("target_band", b); selDay=currentDay(); toast("已保存设置"); render(); };
+  document.getElementById("copylink").onclick=async()=>{ try{ await navigator.clipboard.writeText(link); toast("已复制同步链接"); }catch(e){ prompt("复制这个链接：", link); } };
+  document.getElementById("syncnow").onclick=async()=>{ await syncNow(); toast(syncErr?"同步失败，已存本机":"已同步"); render(); };
+  document.getElementById("usesid2").onclick=()=>{ const s=val("sid2"); if(!/^[A-Za-z0-9_-]{16,80}$/.test(s)){ toast("同步码格式不对"); return; } syncId=s; localStorage.setItem(LS_SYNC,s); syncNow().then(render); };
+  document.getElementById("exp").onclick=()=>{ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:"application/json"})); a.download="toefl30-progress-"+todayStr()+".json"; a.click(); };
+  document.getElementById("imp").onclick=()=>document.getElementById("impf").click();
+  document.getElementById("impf").onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const j=JSON.parse(await f.text()); state=merge(state,j); saveLocal(); scheduleSync(); toast("已导入并合并"); render(); }catch(err){ toast("文件格式不对"); } };
+}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{ view=b.dataset.v; if(view==="today") selDay=selDay||currentDay(); render(); window.scrollTo(0,0); });
+render(); syncNow();
+if("serviceWorker" in navigator && location.protocol==="https:"){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+</script>
+</body>
+</html>
